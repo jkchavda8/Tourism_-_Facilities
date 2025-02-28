@@ -1,0 +1,84 @@
+<button type="button" (click)="navigateToRestaurant()" class="btn btn-secondary mt-3">Back to Restaurants</button>
+<form (ngSubmit)="addHotel()">
+  <div>
+    <label for="title">Title:</label>
+    <input type="text" id="title" [(ngModel)]="newRestaurant.title" name="title" required />
+  </div>
+
+  <div>
+    <label for="description">Description:</label>
+    <textarea id="description" [(ngModel)]="newRestaurant.description" name="description" required></textarea>
+  </div>
+
+  <div>
+    <label for="price">Price:</label>
+    <input type="number" id="price" [(ngModel)]="newRestaurant.price" name="price" />
+  </div>
+
+  <fieldset>
+    <legend>Address</legend>
+    <div>
+      <label for="streetAddress">Street Address:</label>
+      <input
+        type="text"
+        id="streetAddress"
+        [(ngModel)]="newRestaurant.address.streetAddress"
+        name="streetAddress"
+        required
+      />
+    </div>
+    <div>
+      <label for="city">City:</label>
+      <input type="text" id="city" [(ngModel)]="newRestaurant.address.city" name="city" required />
+    </div>
+    <div>
+      <label for="state">State:</label>
+      <input type="text" id="state" [(ngModel)]="newRestaurant.address.state" name="state" required />
+    </div>
+    <div>
+      <label for="country">Country:</label>
+      <input type="text" id="country" [(ngModel)]="newRestaurant.address.country" name="country" required />
+    </div>
+    <div>
+      <label for="pincode">Pincode:</label>
+      <input
+        type="number"
+        id="pincode"
+        [(ngModel)]="newRestaurant.address.pincode"
+        name="pincode"
+        required
+      />
+    </div>
+    <!-- Latitude and Longitude Fields -->
+    <div>
+      <label for="latitude">Latitude:</label>
+      <input
+        type="number"
+        id="latitude"
+        [(ngModel)]="newRestaurant.address.latitude"
+        name="latitude"
+        [readonly]="true"
+        required
+      />
+    </div>
+    <div>
+      <label for="longitude">Longitude:</label>
+      <input
+        type="number"
+        id="longitude"
+        [(ngModel)]="newRestaurant.address.longitude"
+        name="longitude"
+        [readonly]="true"
+        required
+      />
+    </div>
+    <!-- Button to get the location -->
+    <button type="button" (click)="getLocation()">Grant Location Access</button>
+  </fieldset>
+
+  <label for="photos">Photos</label>
+  <input type="file" id="photos" (change)="onFileChange($event)" multiple />
+
+  <button type="submit">Add Restaurant</button>
+
+</form>

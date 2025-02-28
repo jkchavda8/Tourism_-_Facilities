@@ -1,0 +1,28 @@
+<div class="container mt-4">
+    <h2>Profile Details</h2>
+    <form (submit)="updateProfile()">
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" id="firstName" [(ngModel)]="updatedUser.firstName" name="firstName" class="form-control" required />
+      </div>
+  
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" id="lastName" [(ngModel)]="updatedUser.lastName" name="lastName" class="form-control" required />
+      </div>
+  
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" [(ngModel)]="updatedUser.email" name="email" class="form-control" required readonly />
+      </div>
+  
+      <div class="mb-3">
+        <label for="profileImage" class="form-label">Profile Image</label>
+        <input type="file" id="profileImage" (change)="onFileChange($event)" class="form-control" />
+        <img *ngIf="user.profileImagePath" [src]="'http://localhost:5000/images/' + user.profileImagePath.split('/').pop()" class="mt-2" width="100" />
+      </div>
+  
+      <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+  </div>
+  

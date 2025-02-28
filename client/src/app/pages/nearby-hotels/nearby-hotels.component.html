@@ -1,0 +1,142 @@
+<!-- Show a message if there are no nearby hotels -->
+<div *ngIf="nearbyHotels.length === 0" class="text-center mt-4">
+  <p>No hotels found nearby. Add hotels to the system!</p>
+</div>
+
+<!-- Display list of nearby hotels -->
+<div *ngIf="nearbyHotels.length > 0">
+  <div *ngFor="let hotel of nearbyHotels" class="card mb-4 shadow-sm">
+    <div class="card-body" style="cursor: pointer;" (click)="viewDetails(hotel)" data-bs-toggle="modal" data-bs-target="#hotelDetailsModal">
+      <h5 class="card-title text-primary" style="font-weight: bold;">{{ hotel.title }}</h5>
+      <p class="card-text"><strong>Price: ₹</strong>{{ hotel.price }}</p>
+
+      <!-- Display Carousel for Photos -->
+      <div *ngIf="hotel.listingPhotoPaths && hotel.listingPhotoPaths.length > 0" class="mt-3">
+        <h6 class="text-secondary">Photos:</h6>
+        <div 
+          id="hotelCarousel{{hotel._id}}" 
+          class="carousel slide" 
+          data-bs-ride="carousel"
+        >
+          <div class="carousel-inner">
+            <div 
+              *ngFor="let photo of hotel.listingPhotoPaths; let i = index" 
+              [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+            >
+              <img 
+                [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                alt="Hotel Photo" 
+                class="d-block w-100 rounded"
+                style="height: 300px; object-fit: cover;"
+              >
+            </div>
+          </div>
+
+          <!-- Carousel Controls -->
+          <button 
+            class="carousel-control-prev" 
+            type="button" 
+            [attr.data-bs-target]="'#hotelCarousel' + hotel._id" 
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button 
+            class="carousel-control-next" 
+            type="button" 
+            [attr.data-bs-target]="'#hotelCarousel' + hotel._id" 
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for showing detailed information -->
+<div 
+  class="modal fade" 
+  id="hotelDetailsModal" 
+  tabindex="-1" 
+  aria-labelledby="hotelDetailsLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="hotelDetailsLabel">{{ selectedHotel?.title }}</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Description: </strong>{{ selectedHotel?.description }}</p>
+        <p><strong>Price: ₹</strong>{{ selectedHotel?.price }}</p>
+        <p><strong>Status: </strong>{{ selectedHotel?.status }}</p>
+
+        <!-- Address Details -->
+        <div class="mt-3">
+          <p><strong>Address: </strong>{{ selectedHotel?.address.streetAddress }}</p>
+          <p><strong>City: </strong>{{ selectedHotel?.address.city }}</p>
+          <p><strong>State: </strong>{{ selectedHotel?.address.state }}</p>
+          <p><strong>Country: </strong>{{ selectedHotel?.address.country }}</p>
+          <p><strong>Pincode: </strong>{{ selectedHotel?.address.pincode }}</p>
+        </div>
+
+        <!-- Display Photos as Carousel -->
+        <div *ngIf="selectedHotel?.listingPhotoPaths && selectedHotel?.listingPhotoPaths.length > 0" class="mt-4">
+          <h6 class="text-secondary">Photos:</h6>
+          <div 
+            id="hotelDetailsCarousel" 
+            class="carousel slide" 
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let photo of selectedHotel.listingPhotoPaths; let i = index" 
+                [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+              >
+                <img 
+                  [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                  alt="Hotel Photo" 
+                  class="d-block w-100 rounded"
+                  style="height: 300px; object-fit: cover;"
+                >
+              </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button 
+              class="carousel-control-prev" 
+              type="button" 
+              data-bs-target="#hotelDetailsCarousel" 
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button 
+              class="carousel-control-next" 
+              type="button" 
+              data-bs-target="#hotelDetailsCarousel" 
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

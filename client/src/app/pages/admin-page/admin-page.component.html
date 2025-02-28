@@ -1,0 +1,449 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/home" style="font-weight: bold; font-size: 1.5rem;">Tourism & Facilities</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <input type="text" class="form-control me-3" placeholder="Search anything..." [(ngModel)]="searchQuery"
+        (keyup)="onSearchChange()" />
+      <!-- Select Menu for Category -->
+      <select class="form-select me-3" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="Pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="blocked">Blocked</option>
+      </select>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <button class="btn btn-danger" (click)="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container mt-5">
+    <h1 class="text-center mb-4 all-places-heading" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #333;">All Places</h1>
+  
+    <div class="places-grid">
+    <!-- Show a message if there are no places -->
+    <div *ngIf="places.length === 0" class="text-center">
+      <p>No places available at the moment.</p>
+    </div>
+    <div *ngFor="let place of places" class="card mb-4 shadow-sm"> 
+      
+    <!-- Loop through the places and display summarized details -->
+      <div class="card-body"  (click)="viewDetails(place)"
+      style="cursor: pointer;"
+      data-bs-toggle="modal"
+      data-bs-target="#placeDetailsModal">
+        <div class="card-body d-flex flex-column">
+  
+          <!-- Display Title, Price, Categories -->
+          <h5 class="card-title text-primary" style="font-weight: bold;">{{ place.title }}</h5>
+          <p class="card-text"><strong>Price: ₹</strong>{{ place.price }}</p>
+          <p class="card-text"><strong>Categories: </strong>{{ place.categories.join(', ') }}</p>
+   
+          <!-- Display One Photo -->
+          <div class="mt-3">
+            <img 
+              *ngIf="place.placePhotoPaths && place.placePhotoPaths.length > 0" 
+              [src]="'http://localhost:5000/images/' + (place.placePhotoPaths[0].split('/').pop())" 
+              alt="Place Photo" 
+              class="d-block w-100 rounded"
+              style="height: 200px; object-fit: cover;"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Approve/Block Button -->
+      <!-- Button to toggle status -->
+    <button 
+    *ngIf="place.status === 'Pending'" 
+    class="btn btn-success" 
+    (click)="toggleStatus(place._id, place.status)">
+    Approve
+  </button>
+  <button 
+    *ngIf="place.status === 'approved'" 
+    class="btn btn-danger" 
+    (click)="toggleStatus(place._id, place.status)">
+    Block
+  </button>
+  <button 
+    *ngIf="place.status === 'blocked'" 
+    class="btn btn-warning" 
+    (click)="toggleStatus(place._id, place.status)">
+    Approve
+  </button>
+    </div>
+    </div>
+  </div>
+  
+  <!-- Modal for showing detailed information -->
+  <div 
+    class="modal fade" 
+    id="placeDetailsModal" 
+    tabindex="-1" 
+    aria-labelledby="placeDetailsLabel" 
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="placeDetailsLabel">{{ selectedPlace?.title }}</h5>
+          <button 
+            type="button" 
+            class="btn-close" 
+            data-bs-dismiss="modal" 
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Description: </strong>{{ selectedPlace?.description }}</p>
+          <p><strong>Price: ₹</strong>{{ selectedPlace?.price }}</p>
+          <p><strong>Status: </strong>{{ selectedPlace?.status }}</p>
+          <p><strong>Categories: </strong>{{ selectedPlace?.categories.join(', ') }}</p>
+  
+          <!-- Address Details -->
+          <div class="mt-3">
+            <p><strong>Address: </strong>{{ selectedPlace?.address.streetAddress }}</p>
+            <p><strong>City: </strong>{{ selectedPlace?.address.city }}</p>
+            <p><strong>State: </strong>{{ selectedPlace?.address.state }}</p>
+            <p><strong>Country: </strong>{{ selectedPlace?.address.country }}</p>
+            <p><strong>Pincode: </strong>{{ selectedPlace?.address.pincode }}</p>
+          </div>
+  
+          <!-- Display Photos as Carousel -->
+          <div *ngIf="selectedPlace?.placePhotoPaths && selectedPlace?.placePhotoPaths.length > 0" class="mt-4">
+            <h6 class="text-secondary">Photos:</h6>
+            <div 
+              id="placeCarousel" 
+              class="carousel slide" 
+              data-bs-ride="carousel"
+            >
+              <div class="carousel-inner">
+                <div 
+                  *ngFor="let photo of selectedPlace.placePhotoPaths; let i = index" 
+                  [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+                >
+                  <img 
+                    [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                    alt="Place Photo" 
+                    class="d-block w-100 rounded"
+                    style="height: 300px; object-fit: cover;"
+                  >
+                </div>
+              </div>
+  
+              <!-- Carousel Controls -->
+              <button 
+                class="carousel-control-prev" 
+                type="button" 
+                data-bs-target="#placeCarousel" 
+                data-bs-slide="prev"
+              >
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button 
+                class="carousel-control-next" 
+                type="button" 
+                data-bs-target="#placeCarousel" 
+                data-bs-slide="next"
+              >
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="contributions.length === 0" class="text-center mt-5">
+    <p>No contributions yet. Add hotels to your contributions!</p>
+  </div>
+  <div *ngIf="contributions.length > 0" class="text-center mt-5">
+    <h1 class="text-center mb-4 all-places-heading" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #333;">All Hotels</h1>
+  </div>
+  <!-- Display list of hotels contributed by the user -->
+  <div class="places-grid">
+  <div *ngIf="contributions.length > 0">
+    <div *ngFor="let hotel of contributions" class="card mb-4 shadow-sm">
+      <div class="card-body" style="cursor: pointer;" (click)="viewHotelsDetails(hotel)" data-bs-toggle="modal" data-bs-target="#hotelDetailsModal">
+        <h5 class="card-title text-primary" style="font-weight: bold;">{{ hotel.title }}</h5>
+        <p class="card-text"><strong>Price: ₹</strong>{{ hotel.price }}</p>
+
+        <!-- Display Carousel for Photos -->
+        <div *ngIf="hotel.listingPhotoPaths && hotel.listingPhotoPaths.length > 0" class="mt-3">
+          <div 
+            id="hotelCarousel{{hotel._id}}" 
+            class="carousel slide" 
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let photo of hotel.listingPhotoPaths; let i = index" 
+                [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+              >
+                <img 
+                  [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                  alt="Hotel Photo" 
+                  class="d-block w-100 rounded"
+                  style="height: 300px; object-fit: cover;"
+                >
+              </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button 
+              class="carousel-control-prev" 
+              type="button" 
+              [attr.data-bs-target]="'#hotelCarousel' + hotel._id" 
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button 
+              class="carousel-control-next" 
+              type="button" 
+              [attr.data-bs-target]="'#hotelCarousel' + hotel._id" 
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button 
+    *ngIf="hotel.status === 'Pending'" 
+    class="btn btn-success" 
+    (click)="toggleStatusHotel(hotel._id, hotel.status)">
+    Approve
+  </button>
+  <button 
+    *ngIf="hotel.status === 'approved'" 
+    class="btn btn-danger" 
+    (click)="toggleStatusHotel(hotel._id, hotel.status)">
+    Block
+  </button>
+  <button 
+    *ngIf="hotel.status === 'blocked'" 
+    class="btn btn-warning" 
+    (click)="toggleStatusHotel(hotel._id, hotel.status)">
+    Approve
+  </button>
+    </div>
+  </div>
+  </div>
+
+
+<!-- Modal for showing detailed information -->
+<div 
+  class="modal fade" 
+  id="hotelDetailsModal" 
+  tabindex="-1" 
+  aria-labelledby="hotelDetailsLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="hotelDetailsLabel">{{ selectedHotel?.title }}</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Description: </strong>{{ selectedHotel?.description }}</p>
+        <p><strong>Price: ₹</strong>{{ selectedHotel?.price }}</p>
+        <p><strong>Status: </strong>{{ selectedHotel?.status }}</p>
+
+        <!-- Address Details -->
+        <div class="mt-3">
+          <p><strong>Address: </strong>{{ selectedHotel?.address.streetAddress }}</p>
+          <p><strong>City: </strong>{{ selectedHotel?.address.city }}</p>
+          <p><strong>State: </strong>{{ selectedHotel?.address.state }}</p>
+          <p><strong>Country: </strong>{{ selectedHotel?.address.country }}</p>
+          <p><strong>Pincode: </strong>{{ selectedHotel?.address.pincode }}</p>
+        </div>
+
+        <!-- Display Photos as Carousel -->
+        <div *ngIf="selectedHotel?.listingPhotoPaths && selectedHotel?.listingPhotoPaths.length > 0" class="mt-4">
+          <h6 class="text-secondary">Photos:</h6>
+          <div 
+            id="hotelDetailsCarousel" 
+            class="carousel slide" 
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let photo of selectedHotel.listingPhotoPaths; let i = index" 
+                [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+              >
+                <img 
+                  [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                  alt="Hotel Photo" 
+                  class="d-block w-100 rounded"
+                  style="height: 300px; object-fit: cover;"
+                >
+              </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button 
+              class="carousel-control-prev" 
+              type="button" 
+              data-bs-target="#hotelDetailsCarousel" 
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button 
+              class="carousel-control-next" 
+              type="button" 
+              data-bs-target="#hotelDetailsCarousel" 
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="contributions2.length === 0" class="text-center mt-4">
+  <p>No contributions yet. Add Restaurants to your contributions!</p>
+</div>
+
+<div *ngIf="contributions2.length > 0" class="text-center mt-4">
+  <h1 class="text-center mb-4 all-places-heading" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #333;">All Restaurants</h1>
+</div>
+<!-- Display list of restaurants contributed by the user -->
+<div class="places-grid">
+<div *ngIf="contributions2.length > 0">
+  <div *ngFor="let restaurant of contributions2" class="card mb-4 shadow-sm">
+    <div class="card-body" style="cursor: pointer;" (click)="viewRestaurantDetails(restaurant)" data-bs-toggle="modal" data-bs-target="#restaurantDetailsModal">
+      <h5 class="card-title text-primary" style="font-weight: bold;">{{ restaurant.title }}</h5>
+      <p class="card-text"><strong>Price: ₹</strong>{{ restaurant.price }}</p>
+
+      <!-- Display Carousel for Photos -->
+      <div *ngIf="restaurant.listingPhotoPaths && restaurant.listingPhotoPaths.length > 0" class="mt-3">
+        <div id="restaurantCarousel{{restaurant._id}}" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div *ngFor="let photo of restaurant.listingPhotoPaths; let i = index" [class]="i === 0 ? 'carousel-item active' : 'carousel-item'">
+              <img [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" alt="Restaurant Photo" class="d-block w-100 rounded" style="height: 300px; object-fit: cover;">
+            </div>
+          </div>
+
+          <!-- Carousel Controls -->
+          <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#restaurantCarousel' + restaurant._id" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#restaurantCarousel' + restaurant._id" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button 
+    *ngIf="restaurant.status === 'Pending'" 
+    class="btn btn-success" 
+    (click)="toggleStatusRestaurant(restaurant._id, restaurant.status)">
+    Approve
+  </button>
+  <button 
+    *ngIf="restaurant.status === 'approved'" 
+    class="btn btn-danger" 
+    (click)="toggleStatusRestaurant(restaurant._id, restaurant.status)">
+    Block
+  </button>
+  <button 
+    *ngIf="restaurant.status === 'blocked'" 
+    class="btn btn-warning" 
+    (click)="toggleStatusRestaurant(restaurant._id, restaurant.status)">
+    Approve
+  </button>
+  </div>
+</div>
+</div>
+
+<!-- Modal for showing detailed information -->
+<div class="modal fade" id="restaurantDetailsModal" tabindex="-1" aria-labelledby="restaurantDetailsLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="restaurantDetailsLabel">{{ selectedRestaurant?.title }}</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Description: </strong>{{ selectedRestaurant?.description }}</p>
+      <p><strong>Price: ₹</strong>{{ selectedRestaurant?.price }}</p>
+
+      <!-- Address Details -->
+      <div class="mt-3">
+        <p><strong>Address: </strong>{{ selectedRestaurant?.address.streetAddress }}</p>
+        <p><strong>City: </strong>{{ selectedRestaurant?.address.city }}</p>
+        <p><strong>State: </strong>{{ selectedRestaurant?.address.state }}</p>
+        <p><strong>Country: </strong>{{ selectedRestaurant?.address.country }}</p>
+        <p><strong>Pincode: </strong>{{ selectedRestaurant?.address.pincode }}</p>
+        <p><strong>Status: </strong> {{selectedRestaurant?.status }}</p>
+      </div>
+
+      <!-- Display Photos as Carousel -->
+      <div *ngIf="selectedRestaurant?.listingPhotoPaths && selectedRestaurant?.listingPhotoPaths.length > 0" class="mt-4">
+        <h6 class="text-secondary">Photos:</h6>
+        <div id="restaurantDetailsCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div *ngFor="let photo of selectedRestaurant.listingPhotoPaths; let i = index" [class]="i === 0 ? 'carousel-item active' : 'carousel-item'">
+              <img [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" alt="Restaurant Photo" class="d-block w-100 rounded" style="height: 300px; object-fit: cover;">
+            </div>
+          </div>
+
+          <!-- Carousel Controls -->
+          <button class="carousel-control-prev" type="button" data-bs-target="#restaurantDetailsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#restaurantDetailsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+  </div>
+  
+</div>
+</div>

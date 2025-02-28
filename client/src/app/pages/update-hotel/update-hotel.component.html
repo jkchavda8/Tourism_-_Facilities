@@ -1,0 +1,122 @@
+<button type="button" (click)="navigateToHotel()" class="btn btn-secondary mt-3">Back to Hotels</button>
+<form (ngSubmit)="updateHotel()">
+    <div>
+      <label for="title">Title:</label>
+      <input
+        type="text"
+        id="title"
+        [(ngModel)]="hotelToUpdate.title"
+        name="title"
+        required
+      />
+    </div>
+  
+    <div>
+      <label for="description">Description:</label>
+      <textarea
+        id="description"
+        [(ngModel)]="hotelToUpdate.description"
+        name="description"
+        required
+      ></textarea>
+    </div>
+  
+    <div>
+      <label for="price">Price:</label>
+      <input
+        type="number"
+        id="price"
+        [(ngModel)]="hotelToUpdate.price"
+        name="price"
+      />
+    </div>
+  
+    <fieldset>
+      <legend>Address</legend>
+      <div>
+        <label for="streetAddress">Street Address:</label>
+        <input
+          type="text"
+          id="streetAddress"
+          [(ngModel)]="hotelToUpdate.address.streetAddress"
+          name="streetAddress"
+          required
+        />
+      </div>
+      <div>
+        <label for="city">City:</label>
+        <input
+          type="text"
+          id="city"
+          [(ngModel)]="hotelToUpdate.address.city"
+          name="city"
+          required
+        />
+      </div>
+      <div>
+        <label for="state">State:</label>
+        <input
+          type="text"
+          id="state"
+          [(ngModel)]="hotelToUpdate.address.state"
+          name="state"
+          required
+        />
+      </div>
+      <div>
+        <label for="country">Country:</label>
+        <input
+          type="text"
+          id="country"
+          [(ngModel)]="hotelToUpdate.address.country"
+          name="country"
+          required
+        />
+      </div>
+      <div>
+        <label for="pincode">Pincode:</label>
+        <input
+          type="number"
+          id="pincode"
+          [(ngModel)]="hotelToUpdate.address.pincode"
+          name="pincode"
+          required
+        />
+      </div>
+      <div>
+        <label for="latitude">Latitude:</label>
+        <input
+          type="number"
+          id="latitude"
+          [(ngModel)]="hotelToUpdate.address.latitude"
+          name="latitude"
+          [readonly]="true"
+          required
+        />
+      </div>
+      <div>
+        <label for="longitude">Longitude:</label>
+        <input
+          type="number"
+          id="longitude"
+          [(ngModel)]="hotelToUpdate.address.longitude"
+          name="longitude"
+          [readonly]="true"
+          required
+        />
+      </div>
+      <button type="button" (click)="getLocation()">Grant Location Access</button>
+    </fieldset>
+  
+    <label for="photos">Photos</label>
+    <input
+      type="file"
+      id="photos"
+      (change)="onFileChange($event)"
+      multiple
+    />
+  
+    <button type="submit">Update Hotel</button>
+
+  </form>
+  

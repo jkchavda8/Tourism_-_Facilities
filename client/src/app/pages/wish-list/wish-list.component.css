@@ -1,0 +1,87 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Back to Home Button */
+  .btn-primary {
+    margin-top: 20px;
+  }
+  
+  /* Places Grid */
+  .places-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  /* Card Styling */
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card-body {
+    padding: 15px;
+    background: #ffffff;
+  }
+  
+  .card-text {
+    margin-bottom: 10px;
+  }
+  
+  /* Wishlist Button */
+  .btn .fa {
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .text-danger {
+    color: red !important;
+  }
+  
+  .text-secondary {
+    color: gray !important;
+  }
+  
+  /* Image Styling */
+  img {
+    border-radius: 5px;
+  }
+  
+  /* Modal Styling */
+  .modal-content {
+    border-radius: 10px;
+  }
+  
+  .modal-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  .modal-footer {
+    background-color: #f1f1f1;
+  }
+  
+  /* Carousel */
+  .carousel-item img {
+    border-radius: 10px;
+  }
+  
+  .carousel-control-prev, .carousel-control-next {
+    filter: invert(100%);
+  }

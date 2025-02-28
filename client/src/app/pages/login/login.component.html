@@ -1,0 +1,40 @@
+<div class="parent">
+  <div class="container" [ngClass]="isSignDivVisiable ? 'active' : ''" id="container">
+    <div class="form-container sign-up">
+      <form (ngSubmit)="onRegister()" enctype="multipart/form-data">
+        <h1>Create Account</h1>
+        <input type="text" name="firstName" [(ngModel)]="signUpObj.firstName" placeholder="First Name" required>
+        <input type="text" name="lastName" [(ngModel)]="signUpObj.lastName" placeholder="Last Name" required>
+        <input type="email" name="email" [(ngModel)]="signUpObj.email" placeholder="Email" required>
+        <input type="password" name="password" [(ngModel)]="signUpObj.password" placeholder="Password" required>
+        <label for="profileImage">Upload Profile Image:</label>
+        <input type="file" id="profileImage" (change)="onFileSelected($event)" accept="image/*" required>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+
+    <div class="form-container sign-in">
+      <form (ngSubmit)="onLogin()">
+        <h1>Sign In</h1>
+        <input type="email" name="email" [(ngModel)]="loginObj.email" placeholder="Email" required>
+        <input type="password" name="password" [(ngModel)]="loginObj.password" placeholder="Password" required>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1>Welcome Back!</h1>
+          <p>Enter your personal details to use all site features</p>
+          <button type="button" id="login" (click)="isSignDivVisiable = false">Sign In</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1>Hello, Friend!</h1>
+          <p>Register with your personal details to use all site features</p>
+          <button type="button" id="register" (click)="isSignDivVisiable = true">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

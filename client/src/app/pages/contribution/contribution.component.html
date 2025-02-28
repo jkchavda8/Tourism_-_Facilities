@@ -1,0 +1,165 @@
+<div class="container mt-5">
+  <h1 class="text-center">Your Contributions</h1>
+
+  <div class="text-center mb-4">
+    <button 
+      class="btn btn-primary" 
+      routerLink="/home"
+    >
+      Back to Home
+    </button>
+    &nbsp;
+    <button class="btn btn-primary"
+      routerLink="/hotels">
+      Contributions Hotels
+    </button>
+    &nbsp;
+    <button class="btn btn-primary"
+      routerLink="/restaurants">
+      Contributions Restaurants
+    </button>
+  </div>
+
+  <!-- Show a message if there are no contributions -->
+  <div *ngIf="contributions.length === 0" class="text-center mt-4">
+    <p>No contributions yet. Add places to your contributions!</p>
+  </div>
+
+  <!-- Display list of places contributed by the user -->
+  <div *ngIf="contributions.length > 0" class="row">
+    <div *ngFor="let place of contributions" class="card mb-4 shadow-sm ">
+      
+      <div 
+        class="card-body" 
+        style="cursor: pointer;" 
+        (click)="viewDetails(place)" 
+        data-bs-toggle="modal" 
+        data-bs-target="#contributionDetailsModal"
+      >
+      
+        <h5 class="card-title text-primary" style="font-weight: bold;">{{ place.title }}</h5>
+        <div class="rating">
+          <ng-container *ngFor="let star of getStarArray(place.average_rating)">
+            <i *ngIf="star === 1" class="fas fa-star full-star"></i>
+            <i *ngIf="star === 0.5" class="fas fa-star-half-alt half-star"></i>
+            <i *ngIf="star === 0" class="far fa-star empty-star"></i>
+          </ng-container>
+          <span class="rating-value">({{ place.average_rating.toFixed(1) }})</span>
+        </div>
+        <p class="card-text"><strong>Price: ₹</strong>{{ place.price }}</p>
+        <p class="card-text"><strong>Categories: </strong>{{ place.categories.join(', ') }}</p>
+
+        <!-- Display One Photo -->
+        <div class="mt-3">
+          <img 
+            *ngIf="place.placePhotoPaths && place.placePhotoPaths.length > 0" 
+            [src]="'http://localhost:5000/images/' + (place.placePhotoPaths[0].split('/').pop())" 
+            alt="Place Photo" 
+            class="d-block w-100 rounded"
+            style="height: 200px; object-fit: cover;"
+          >
+        </div>
+      </div>
+      <!-- Update and Delete Buttons -->
+      <div class="mt-3 d-flex justify-content-between">
+        <button 
+          class="btn btn-warning" 
+          (click)="updatePlace(place._id)"
+        >
+          Update Place
+        </button>
+        <button 
+          class="btn btn-danger" 
+          (click)="deletePlace(place._id)"
+        >
+          Delete Place
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for showing detailed information -->
+<div 
+  class="modal fade" 
+  id="contributionDetailsModal" 
+  tabindex="-1" 
+  aria-labelledby="contributionDetailsLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="contributionDetailsLabel">{{ selectedPlace?.title }}</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Description: </strong>{{ selectedPlace?.description }}</p>
+        <p><strong>Price: ₹</strong>{{ selectedPlace?.price }}</p>
+        <p><strong>Status: </strong>{{ selectedPlace?.status }}</p>
+        <p><strong>Categories: </strong>{{ selectedPlace?.categories.join(', ') }}</p>
+
+        <!-- Address Details -->
+        <div class="mt-3">
+          <p><strong>Address: </strong>{{ selectedPlace?.address.streetAddress }}</p>
+          <p><strong>City: </strong>{{ selectedPlace?.address.city }}</p>
+          <p><strong>State: </strong>{{ selectedPlace?.address.state }}</p>
+          <p><strong>Country: </strong>{{ selectedPlace?.address.country }}</p>
+          <p><strong>Pincode: </strong>{{ selectedPlace?.address.pincode }}</p>
+        </div>
+
+        <!-- Display Photos as Carousel -->
+        <div *ngIf="selectedPlace?.placePhotoPaths && selectedPlace?.placePhotoPaths.length > 0" class="mt-4">
+          <h6 class="text-secondary">Photos:</h6>
+          <div 
+            id="contributionCarousel" 
+            class="carousel slide" 
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let photo of selectedPlace.placePhotoPaths; let i = index" 
+                [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+              >
+                <img 
+                  [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                  alt="Place Photo" 
+                  class="d-block w-100 rounded"
+                  style="height: 300px; object-fit: cover;"
+                >
+              </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button 
+              class="carousel-control-prev" 
+              type="button" 
+              data-bs-target="#contributionCarousel" 
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button 
+              class="carousel-control-next" 
+              type="button" 
+              data-bs-target="#contributionCarousel" 
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

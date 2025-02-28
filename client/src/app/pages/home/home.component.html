@@ -1,0 +1,251 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand" routerLink="/home" style="font-weight: bold; font-size: 1.5rem;">
+      Tourism & Facilities
+    </a>
+
+    <!-- Toggler Button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Filters (Category & Search) -->
+    <div class="d-flex align-items-center">
+      <select class="form-select me-3" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="" selected>ALL</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+
+      <input type="text" class="form-control me-3" placeholder="Search anything..." [(ngModel)]="searchQuery"
+        (keyup)="onSearchChange()" />
+    </div>
+
+    
+    <!-- Collapsible Navigation Items -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <button class="btn btn-info me-2" (click)="openChatBot()">Ask PlaceChatBot</button>
+        </li>    
+        <li class="nav-item">
+          <button class="btn btn-primary me-2" routerLink="/places">Add Place</button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-primary me-2" routerLink="/contribute">Your Contribution</button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-primary me-2" routerLink="/wishList">Your Wishlist</button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-danger me-2" (click)="logout()">Logout</button>
+        </li>
+        <li class="nav-item">
+          <img *ngIf="profileImagePath" [src]="'http://localhost:5000/images/' + profileImagePath.split('/').pop()"
+            class="rounded-circle" alt="Profile" width="40" height="40" style="cursor: pointer;" (click)="goToProfile()" />
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container mt-5">
+  <!-- <h1 class="text-center mb-4 all-places-heading" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #333;">All Places</h1> -->
+
+  <div class="places-grid">
+  <!-- Show a message if there are no places -->
+  <div *ngIf="places.length === 0" class="text-center">
+    <p>No places available at the moment.</p>
+  </div>
+  <div *ngFor="let place of places" class="card mb-4 shadow-sm"> 
+    <div class="mt-3 d-flex justify-content-between">
+      &nbsp;
+      <h5 class="card-title text-primary" style="font-weight: bold;">{{ place.title }}</h5>
+      
+      <button 
+        class="btn" 
+        (click)="toggleWishlist(place)">
+        <i 
+          class="fa" 
+          [ngClass]="isInWishlist(place) ? 'fa-heart text-danger' : 'fa-heart-o text-secondary'"
+          aria-hidden="true">
+        </i>
+      </button>
+    </div>
+    <div class="rating">
+      <ng-container *ngFor="let star of getStarArray(place.average_rating)">
+        <i *ngIf="star === 1" class="fas fa-star full-star"></i>
+        <i *ngIf="star === 0.5" class="fas fa-star-half-alt half-star"></i>
+        <i *ngIf="star === 0" class="far fa-star empty-star"></i>
+      </ng-container>
+      <span class="rating-value">({{ place.average_rating.toFixed(1) }})</span>
+    </div>
+  <!-- Loop through the places and display summarized details -->
+    <div class="card-body"  (click)="viewDetails(place)"
+    style="cursor: pointer;"
+    data-bs-toggle="modal"
+    data-bs-target="#placeDetailsModal">
+      <div class="card-body d-flex flex-column">
+
+        <!-- Display Title, Price, Categories -->
+        
+        <p class="card-text"><strong>Price: ₹</strong>{{ place.price }}</p>
+        <p class="card-text"><strong>Categories: </strong>{{ place.categories.join(', ') }}</p>
+ 
+        <!-- Display One Photo -->
+        <div class="mt-3">
+          <img 
+            *ngIf="place.placePhotoPaths && place.placePhotoPaths.length > 0" 
+            [src]="'http://localhost:5000/images/' + (place.placePhotoPaths[0].split('/').pop())" 
+            alt="Place Photo" 
+            class="d-block w-100 rounded"
+            style="height: 200px; object-fit: cover;"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- Modal for showing detailed information -->
+<div 
+  class="modal fade" 
+  id="placeDetailsModal" 
+  tabindex="-1" 
+  aria-labelledby="placeDetailsLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="placeDetailsLabel">{{ selectedPlace?.title }}</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Description: </strong>{{ selectedPlace?.description }}</p>
+        <p><strong>Price: ₹</strong>{{ selectedPlace?.price }}</p>
+        <p><strong>Categories: </strong>{{ selectedPlace?.categories.join(', ') }}</p>
+
+        <!-- Address Details -->
+        <div class="mt-3">
+          <p><strong>Address: </strong>{{ selectedPlace?.address.streetAddress }}</p>
+          <p><strong>City: </strong>{{ selectedPlace?.address.city }}</p>
+          <p><strong>State: </strong>{{ selectedPlace?.address.state }}</p>
+          <p><strong>Country: </strong>{{ selectedPlace?.address.country }}</p>
+          <p><strong>Pincode: </strong>{{ selectedPlace?.address.pincode }}</p>
+        </div>
+
+        <!-- Display Photos as Carousel -->
+        <div *ngIf="selectedPlace?.placePhotoPaths && selectedPlace?.placePhotoPaths.length > 0" class="mt-4">
+          <h6 class="text-secondary">Photos:</h6>
+          <div 
+            id="placeCarousel" 
+            class="carousel slide" 
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div 
+                *ngFor="let photo of selectedPlace.placePhotoPaths; let i = index" 
+                [class]="i === 0 ? 'carousel-item active' : 'carousel-item'"
+              >
+                <img 
+                  [src]="'http://localhost:5000/images/' + (photo.split('/').pop())" 
+                  alt="Place Photo" 
+                  class="d-block w-100 rounded"
+                  style="height: 300px; object-fit: cover;"
+                >
+              </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button 
+              class="carousel-control-prev" 
+              type="button" 
+              data-bs-target="#placeCarousel" 
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button 
+              class="carousel-control-next" 
+              type="button" 
+              data-bs-target="#placeCarousel" 
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-primary me-2" 
+          (click)="showNearbyHotels(selectedPlace,selectedPlace._id)"
+        >
+          Show Nearby Hotels
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary me-2" 
+          (click)="showNearbyRestaurants(selectedPlace,selectedPlace._id)"
+        > 
+        Show Nearby Restaurants
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary me-2" 
+          (click)="navigateToReviewPage(selectedPlace._id)"
+        >
+          Review
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ChatBot Modal -->
+<div class="modal fade" id="chatBotModal" tabindex="-1" aria-labelledby="chatBotLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chatBotLabel">🌍 PlaceChatBot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- User Input -->
+        <input type="text" class="form-control mb-2" placeholder="Ask about any place..." [(ngModel)]="userQuery" />
+
+        <!-- Ask Button -->
+        <button class="btn btn-primary w-100" (click)="sendMessage()" [disabled]="loading">
+          {{ loading ? 'Thinking...' : 'Ask' }}
+        </button>
+
+        <!-- Loader -->
+        <div *ngIf="loading" class="text-center mt-3">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p>Fetching details...</p>
+        </div>
+
+        <!-- Response Section -->
+        <div class="mt-3" *ngIf="botResponse">
+          <div class="alert" [ngClass]="{'alert-success': !error, 'alert-danger': error}">
+            <strong>{{ error ? '❌ Error:' : '🤖 Response:' }}</strong>
+            <div [innerHTML]="formattedBotResponse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

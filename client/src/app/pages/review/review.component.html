@@ -1,0 +1,30 @@
+<div class="container mt-4">
+    <form (ngSubmit)="submitReview()">
+      <div class="mb-3">
+        <label class="form-label">Rating</label>
+        <div class="rating">
+          <i 
+            *ngFor="let star of [1,2,3,4,5]; let i = index" 
+            class="fa-star" 
+            [ngClass]="{'fas': i < review.rating, 'far': i >= review.rating}" 
+            (click)="setRating(i + 1)">
+          </i>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea class="form-control" id="comment" [(ngModel)]="review.comment" name="comment" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-success">Submit Review</button>
+    </form>
+  </div>
+  
+  
+    <h2>Reviews</h2>
+    <div *ngFor="let rev of reviews" class="review-card">
+      <p><strong>{{ rev.user_id.firstName }}</strong> ({{ rev.user_id.email }})</p>
+      <p>Rating: ⭐{{ rev.rating }}</p>
+      <p>{{ rev.comment }}</p>
+      <p><small>{{ rev.createdAt | date }}</small></p>
+    </div>
+  
